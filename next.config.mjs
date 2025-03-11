@@ -14,13 +14,12 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    domains: ['raw.githubusercontent.com'],
     unoptimized: true,
   },
   experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
-  },
+    webpackBuildWorker: true
+  }
 }
 
 mergeConfig(nextConfig, userConfig)
