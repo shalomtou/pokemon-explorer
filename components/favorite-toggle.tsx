@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
@@ -16,6 +16,11 @@ export function FavoriteToggle({ pokemonId, isFavorite, onToggle }: FavoriteTogg
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [isFav, setIsFav] = useState(isFavorite)
+  
+  // Update local state when prop changes
+  useEffect(() => {
+    setIsFav(isFavorite)
+  }, [isFavorite])
 
   const toggleFavorite = async () => {
     setIsLoading(true)
@@ -25,7 +30,10 @@ export function FavoriteToggle({ pokemonId, isFavorite, onToggle }: FavoriteTogg
           method: "DELETE",
         })
 
-        if (!response.ok) throw new Error("Failed to remove from favorites")
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to remove from favorites")
+        }
 
         toast({
           title: "Removed from favorites",
@@ -40,7 +48,10 @@ export function FavoriteToggle({ pokemonId, isFavorite, onToggle }: FavoriteTogg
           body: JSON.stringify({ id: pokemonId }),
         })
 
-        if (!response.ok) throw new Error("Failed to add to favorites")
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to add to favorites")
+        }
 
         toast({
           title: "Added to favorites",
@@ -51,9 +62,10 @@ export function FavoriteToggle({ pokemonId, isFavorite, onToggle }: FavoriteTogg
       setIsFav(!isFav)
       if (onToggle) onToggle()
     } catch (error) {
+      console.error("Error toggling favorite:", error)
       toast({
         title: "Error",
-        description: "Failed to update favorites. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to update favorites. Please try again.",
         variant: "destructive",
       })
     } finally {

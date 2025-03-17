@@ -1,0 +1,23 @@
+body {
+  background-color: #f0f0f0 !important;
+  border: 5px solid red !important;
+  color: blue !important;
+  font-family: Arial, sans-serif !important;
+}
+
+h1 {
+  color: red !important;
+  font-size: 24px !important;
+}
+
+.container {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 20px !important;
+}
+
+.header {
+  background-color: #333 !important;
+  color: white !important;
+  padding: 10px !important;
+} 

@@ -4,9 +4,20 @@ import path from "path"
 
 const FAVORITES_FILE = path.join(process.cwd(), "favorites.json")
 
+// Initialize favorites file if it doesn't exist
+async function initFavorites() {
+  try {
+    await fs.access(FAVORITES_FILE)
+  } catch (error) {
+    // File doesn't exist, create it with an empty array
+    await fs.writeFile(FAVORITES_FILE, JSON.stringify([]))
+  }
+}
+
 // Get favorites from file
 async function getFavorites() {
   try {
+    await initFavorites()
     const data = await fs.readFile(FAVORITES_FILE, "utf8")
     return JSON.parse(data)
   } catch (error) {
@@ -17,7 +28,13 @@ async function getFavorites() {
 
 // Save favorites to file
 async function saveFavorites(favorites: any[]) {
-  await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites))
+  try {
+    await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites, null, 2))
+    return true
+  } catch (error) {
+    console.error("Error saving favorites:", error)
+    return false
+  }
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
@@ -35,7 +52,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       return NextResponse.json({ error: "Pokemon not found in favorites" }, { status: 404 })
     }
 
-    await saveFavorites(updatedFavorites)
+    const success = await saveFavorites(updatedFavorites)
+    
+    if (!success) {
+      return NextResponse.json({ error: "Failed to save favorites" }, { status: 500 })
+    }
 
     return NextResponse.json({ message: "Removed from favorites" })
   } catch (error) {

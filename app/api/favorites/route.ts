@@ -9,6 +9,7 @@ async function initFavorites() {
   try {
     await fs.access(FAVORITES_FILE)
   } catch (error) {
+    // File doesn't exist, create it with an empty array
     await fs.writeFile(FAVORITES_FILE, JSON.stringify([]))
   }
 }
@@ -27,7 +28,13 @@ async function getFavorites() {
 
 // Save favorites to file
 async function saveFavorites(favorites: any[]) {
-  await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites))
+  try {
+    await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites, null, 2))
+    return true
+  } catch (error) {
+    console.error("Error saving favorites:", error)
+    return false
+  }
 }
 
 export async function GET() {
@@ -68,7 +75,11 @@ export async function POST(request: NextRequest) {
     }
 
     favorites.push({ id, name: pokemonName })
-    await saveFavorites(favorites)
+    const success = await saveFavorites(favorites)
+    
+    if (!success) {
+      return NextResponse.json({ error: "Failed to save favorites" }, { status: 500 })
+    }
 
     return NextResponse.json({ message: "Added to favorites" }, { status: 201 })
   } catch (error) {
