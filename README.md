@@ -2,7 +2,7 @@
 
 A modern Pokémon exploration app built with Next.js and TypeScript. Browse, search, and discover Pokémon with a beautiful, responsive interface.
 
-[Live Demo](https://pokemon-explorer-shalomtou.vercel.app/)
+[Live Demo](https://pokadex-mahc9qtsc-shaloms-projects-97b5bfe2.vercel.app/)
 
 ![PokéExplorer Screenshot](public/placeholder-logo.png)
 
